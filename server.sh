@@ -5,7 +5,7 @@ pipeline {
         stage('Check URL') {
             steps {
                 script {
-                    def url = 'https://www.youtube.com/'  // Specify the URL you want to check
+                    def url = 'htps://tube.com/'  // Specify the URL you want to check
 
                     def response = httpRequest(url: url, ignoreSslErrors: true)
                     
