@@ -1,14 +1,6 @@
 pipeline {
     agent any
     
-    parameters {
-        choice(
-            choices: ['dev', 'qa', 'prod'],
-            description: 'Select the environment',
-            name: 'ENVIRONMENT'
-        )
-    }
-    
     stages {
         stage('Execute Shell Script') {
             steps {
