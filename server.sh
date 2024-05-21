@@ -18,7 +18,7 @@ pipeline {
                             Write-Output \$sum
                         """
                         
-                        def scriptFilePath = "${env.WORKSPACE}/Addition.ps1"
+                        def scriptFilePath = "${env.WORKSPACE}/Sample.ps1"
                         
                         writeFile file: scriptFilePath, text: powerShellCommand
                         
