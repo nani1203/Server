@@ -1,18 +1,40 @@
 pipeline {
     agent any
-
+    
+    parameters {
+        choice(
+            choices: ['dev', 'qa', 'prod'],
+            description: 'Select the environment',
+            name: 'ENVIRONMENT'
+        )
+    }
+    
     stages {
-        stage('Check URL') {
+        stage('Execute PowerShell Script') {
             steps {
                 script {
-                    def url = 'htps://youtube.com/'  // Specify the URL you want to check
-
-                    def response = httpRequest(url: url, ignoreSslErrors: true)
-                    
-                    if (response.status == 200) {
-                        println "URL ${url} is reachable."
-                    } else {
-                        println "URL ${url} is not reachable. Response status: ${response.status}"
+                    try {
+                        def a = 101
+                        def b = 11
+                        
+                        def powerShellCommand = """
+                            param(
+                                [int]\$a,
+                                [int]\$b
+                            )
+                            \$sum = \$a + \$b
+                            Write-Output \$sum
+                        """
+                        
+                        def scriptFilePath = "${env.WORKSPACE}/Addition.ps1"
+                        
+                        writeFile file: scriptFilePath, text: powerShellCommand
+                        
+                        def result = powershell(returnStdout: true, script: "powershell.exe -File '${scriptFilePath}' -a ${a} -b ${b}").trim()
+                        
+                        echo "Addition result: ${result}"
+                    } catch (Exception e) {
+                        error "An error occurred: ${e.message}"
                     }
                 }
             }
