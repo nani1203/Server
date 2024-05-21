@@ -1,30 +1,27 @@
 pipeline {
     agent any
     
+    parameters {
+        choice(
+            choices: ['dev', 'qa', 'prod'],
+            description: 'Select the environment',
+            name: 'ENVIRONMENT'
+        )
+    }
+    
     stages {
-        stage('Execute PowerShell Script') {
+        stage('Execute Shell Script') {
             steps {
                 script {
                     try {
-                        def a = 101
-                        def b = 11
+                        // Clone the repository
+                        checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/nani1203/Server.git']]])
                         
-                        def powerShellCommand = """
-                            param(
-                                [int]\$a,
-                                [int]\$b
-                            )
-                            \$sum = \$a + \$b
-                            Write-Output \$sum
-                        """
-                        
-                        def scriptFilePath = "${env.WORKSPACE}/Sample.ps1"
-                        
-                        writeFile file: scriptFilePath, text: powerShellCommand
-                        
-                        def result = powershell(returnStdout: true, script: "powershell.exe -File '${scriptFilePath}' -a ${a} -b ${b}").trim()
-                        
-                        echo "Addition result: ${result}"
+                        // Change directory to where the shell script is located
+                        dir('.') {
+                            // Execute the shell script
+                            sh './server.sh'
+                        }
                     } catch (Exception e) {
                         error "An error occurred: ${e.message}"
                     }
